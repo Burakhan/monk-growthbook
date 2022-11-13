@@ -1,0 +1,26 @@
+namespace: monk-growthbook
+
+stack:
+  defines: process-group
+  runnable-list:
+    - monk-growthbook/growthbook
+    - monk-growthbook/growthbook-db
+  variables:
+    jtw_secret:
+      type: string
+      value: monk
+    growthbook_domain:
+      type: string
+      value: growthbook.monk.io
+    growthbook_http:
+      type: string
+      value: http
+    growthbook_port1:
+      type: int
+      value: 3100
+    growthbook_port2:
+      type: int
+      value: 3000
+    db_password:
+      type: string
+      value: monk

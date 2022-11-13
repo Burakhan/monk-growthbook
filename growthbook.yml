@@ -1,0 +1,60 @@
+namespace: monk-growthbook
+
+growthbook:
+  metadata:
+    defines: metadata
+    name: Growthbook
+    description: GrowthBook is an open source platform that gives any company the power of a customized feature flagging and A/B testing system.
+    website: https://www.growthbook.io/
+    publisher: monk.io
+    icon: https://uploads-ssl.webflow.com/62019b0bccbb27eb8ff291bb/62019c940010d720321b0356_growth-book-logo-white.svg
+  defines: runnable
+  variables:
+    growthbook_api_origin:
+      env: APP_ORIGIN
+      type: string
+      value: <- `${growthbook_http}://${growthbook_domain}:3000`
+    growthbook_jwt_secret:
+      env: JWT_SECRET
+      type: string
+      value: <- `${jtw_secret}`
+    growthbook_api_host:
+      env: API_HOST
+      type: string
+      value: <- `${growthbook_http}://${growthbook_domain}:3100`
+    mongo_db_host:
+      type: string
+      value: <- get-hostname("monk-growthbook/growthbook-db", "monk-mongo-db") split(".dns.podman") join("")
+    admin_token:
+      env: MONGODB_URI
+      type: string
+      value: <- `mongodb://${db_username}:${db_password}@${mongo_db_host}:27017/`
+    volume_local:
+      type: string
+      value: <- `${monk-volume-path}/growthbook`
+  containers:
+    monk-growthbook:
+      image: 'growthbook/growthbook:latest'
+      ports:
+        - <- `0.0.0.0:${growthbook_port1}:3100`
+        - <- `0.0.0.0:${growthbook_port2}:3000`
+      paths:
+        - <- `${volume_local}:/usr/local/src/app/packages/back-end/uploads`
+
+growthbook-db:
+  defines: runnable
+  variables:
+    db_root_password:
+      env: MONGO_INITDB_ROOT_PASSWORD
+      type: string
+      value: <- `${db_password}`
+    db_root_username:
+      env: MONGO_INITDB_ROOT_USERNAME
+      type: string
+      value: <- `${db_username}`
+    volume_local:
+      type: string
+      value: <- `${monk-volume-path}/growthbook-db`
+  containers:
+    monk-mongo-db:
+      image: 'mongo:latest'
